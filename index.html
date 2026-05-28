@@ -1,0 +1,1860 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceHub Pro - Secure Financial Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .gradient-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .gradient-success {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    
+    .gradient-danger {
+      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    }
+    
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    .animate-slide-up {
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .animate-scale-in {
+      animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    
+    .stat-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .payment-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .payment-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+    
+    .payment-card.selected {
+      border: 2px solid #667eea;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary {
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .input-modern {
+      transition: all 0.3s ease;
+    }
+    
+    .input-modern:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .toast {
+      animation: toastSlide 0.3s ease-out, toastFade 0.3s ease-in 2.7s forwards;
+    }
+    
+    @keyframes toastSlide {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes toastFade {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+    
+    .loading-dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+    
+    .loading-dots span {
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    
+    .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+    
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+    
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+    }
+    
+    .edit-transaction-row {
+      transition: all 0.2s ease;
+    }
+    
+    .edit-transaction-row:hover {
+      background: rgba(102, 126, 234, 0.05);
+    }
+    
+    .card-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-shine::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .card-shine:hover::before {
+      left: 100%;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full"></div>
+  <script>
+    // State Management
+    let currentUser = null;
+    let currentView = 'login';
+    let allTransactions = [];
+    let chartInstances = {};
+    let userSettings = JSON.parse(localStorage.getItem('financeHub_settings') || '{}');
+    
+    const currencies = [
+      { code: 'USD', symbol: '$', name: 'US Dollar' },
+      { code: 'EUR', symbol: '€', name: 'Euro' },
+      { code: 'GBP', symbol: '£', name: 'British Pound' },
+      { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
+      { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+      { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+      { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
+      { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' }
+    ];
+    
+    const themes = [
+      { id: 'purple', name: 'Purple Dream', start: '#667eea', end: '#764ba2' },
+      { id: 'ocean', name: 'Ocean Blue', start: '#2E3192', end: '#1BFFFF' },
+      { id: 'sunset', name: 'Sunset Orange', start: '#ff6b6b', end: '#feca57' },
+      { id: 'forest', name: 'Forest Green', start: '#11998e', end: '#38ef7d' },
+      { id: 'rose', name: 'Rose Gold', start: '#eb3349', end: '#f45c43' },
+      { id: 'midnight', name: 'Midnight Blue', start: '#0f2027', end: '#2c5364' }
+    ];
+    
+    const defaultConfig = {
+      app_title: 'FinanceHub Pro',
+      welcome_message: 'Welcome to your financial dashboard',
+      dashboard_title: 'Financial Overview',
+      stats_label: 'Key Metrics',
+      transactions_label: 'Recent Transactions',
+      primary_gradient_start: '#667eea',
+      primary_gradient_end: '#764ba2',
+      success_color: '#10b981',
+      danger_color: '#ef4444',
+      background_color: '#f8fafc'
+    };
+    
+    let config = { ...defaultConfig };
+    
+    // User database (localStorage simulation)
+    const userDatabase = JSON.parse(localStorage.getItem('financeHub_users') || '{}');
+    
+    // Payment methods
+    const paymentMethods = [
+      { id: 'credit_card', name: 'Credit Card', icon: '💳', color: '#8b5cf6' },
+      { id: 'debit_card', name: 'Debit Card', icon: '💰', color: '#3b82f6' },
+      { id: 'upi', name: 'UPI', icon: '📱', color: '#10b981' },
+      { id: 'cash', name: 'Cash', icon: '💵', color: '#f59e0b' },
+      { id: 'bank_transfer', name: 'Bank Transfer', icon: '🏦', color: '#06b6d4' }
+    ];
+    
+    // Categories
+    const categories = [
+      { id: 'groceries', name: 'Groceries', icon: '🛒', color: '#10b981' },
+      { id: 'dining', name: 'Dining Out', icon: '🍽️', color: '#f97316' },
+      { id: 'transport', name: 'Transportation', icon: '🚗', color: '#3b82f6' },
+      { id: 'shopping', name: 'Shopping', icon: '🛍️', color: '#ec4899' },
+      { id: 'bills', name: 'Bills & Utilities', icon: '💡', color: '#8b5cf6' },
+      { id: 'entertainment', name: 'Entertainment', icon: '🎬', color: '#f59e0b' },
+      { id: 'health', name: 'Healthcare', icon: '🏥', color: '#14b8a6' },
+      { id: 'salary', name: 'Salary', icon: '💼', color: '#10b981' },
+      { id: 'freelance', name: 'Freelancing', icon: '💻', color: '#6366f1' },
+      { id: 'investment', name: 'Investment', icon: '📈', color: '#8b5cf6' },
+      { id: 'other', name: 'Other', icon: '📦', color: '#64748b' }
+    ];
+    
+    // Data SDK Handler
+    const dataHandler = {
+      onDataChanged(data) {
+        allTransactions = data || [];
+        if (currentView === 'dashboard') {
+          renderDashboard(document.getElementById('app'));
+        }
+      }
+    };
+    
+    // Initialize App
+    async function initApp() {
+      try {
+        const savedUser = localStorage.getItem('financeHub_currentUser');
+        if (savedUser) {
+          currentUser = JSON.parse(savedUser);
+        }
+        
+        if (window.dataSdk) {
+          const result = await window.dataSdk.init(dataHandler);
+          if (!result.isOk) {
+            console.error('Data SDK initialization failed');
+          }
+        }
+        
+        if (window.elementSdk) {
+          window.elementSdk.init({
+            defaultConfig,
+            onConfigChange: async (newConfig) => {
+              config = { ...config, ...newConfig };
+              renderCurrentView();
+            },
+            mapToCapabilities: (cfg) => ({
+              recolorables: [
+                {
+                  get: () => cfg.primary_gradient_start || defaultConfig.primary_gradient_start,
+                  set: (v) => window.elementSdk.setConfig({ primary_gradient_start: v })
+                },
+                {
+                  get: () => cfg.primary_gradient_end || defaultConfig.primary_gradient_end,
+                  set: (v) => window.elementSdk.setConfig({ primary_gradient_end: v })
+                },
+                {
+                  get: () => cfg.success_color || defaultConfig.success_color,
+                  set: (v) => window.elementSdk.setConfig({ success_color: v })
+                },
+                {
+                  get: () => cfg.danger_color || defaultConfig.danger_color,
+                  set: (v) => window.elementSdk.setConfig({ danger_color: v })
+                },
+                {
+                  get: () => cfg.background_color || defaultConfig.background_color,
+                  set: (v) => window.elementSdk.setConfig({ background_color: v })
+                }
+              ],
+              borderables: [],
+              fontEditable: undefined,
+              fontSizeable: undefined
+            }),
+            mapToEditPanelValues: (cfg) => new Map([
+              ['app_title', cfg.app_title || defaultConfig.app_title],
+              ['welcome_message', cfg.welcome_message || defaultConfig.welcome_message],
+              ['dashboard_title', cfg.dashboard_title || defaultConfig.dashboard_title],
+              ['stats_label', cfg.stats_label || defaultConfig.stats_label],
+              ['transactions_label', cfg.transactions_label || defaultConfig.transactions_label]
+            ])
+          });
+          config = { ...defaultConfig, ...window.elementSdk.config };
+        }
+      } catch (e) {
+        console.error('Init error:', e);
+      }
+      
+      render();
+    }
+    
+    // User Management
+    function hashPassword(password) {
+      let hash = 0;
+      for (let i = 0; i < password.length; i++) {
+        const char = password.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return hash.toString(36);
+    }
+    
+    function registerUser(username, email, password) {
+      if (userDatabase[username]) {
+        return { success: false, message: 'Username already exists' };
+      }
+      
+      const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      userDatabase[username] = {
+        userId,
+        username,
+        email,
+        passwordHash: hashPassword(password),
+        createdAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('financeHub_users', JSON.stringify(userDatabase));
+      return { success: true, userId };
+    }
+    
+    function loginUser(username, password) {
+      const user = userDatabase[username];
+      if (!user) {
+        return { success: false, message: 'User not found' };
+      }
+      
+      if (user.passwordHash !== hashPassword(password)) {
+        return { success: false, message: 'Incorrect password' };
+      }
+      
+      currentUser = {
+        userId: user.userId,
+        username: user.username,
+        email: user.email
+      };
+      
+      localStorage.setItem('financeHub_currentUser', JSON.stringify(currentUser));
+      return { success: true };
+    }
+    
+    function logoutUser() {
+      currentUser = null;
+      localStorage.removeItem('financeHub_currentUser');
+      currentView = 'login';
+      destroyCharts();
+      render();
+      showToast('Logged out successfully', 'success');
+    }
+    
+    // Utility Functions
+    function getUserTransactions() {
+      if (!currentUser) return [];
+      return allTransactions.filter(t => t.userId === currentUser.userId);
+    }
+    
+    function getCategoryById(id) {
+      return categories.find(c => c.id === id) || categories[categories.length - 1];
+    }
+    
+    function getPaymentMethodById(id) {
+      return paymentMethods.find(p => p.id === id) || paymentMethods[0];
+    }
+    
+    function formatCurrency(amount) {
+      const currencyCode = (userSettings[currentUser?.userId]?.currency) || 'USD';
+      const currency = currencies.find(c => c.code === currencyCode) || currencies[0];
+      return currency.symbol + Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    
+    function calculateStats() {
+      const userTxns = getUserTransactions();
+      const income = userTxns.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+      const expenses = userTxns.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+      const balance = income - expenses;
+      
+      const categoryData = {};
+      const paymentData = {};
+      
+      userTxns.forEach(t => {
+        categoryData[t.category] = (categoryData[t.category] || 0) + t.amount;
+        paymentData[t.paymentMethod] = (paymentData[t.paymentMethod] || 0) + t.amount;
+      });
+      
+      return { income, expenses, balance, total: userTxns.length, categoryData, paymentData };
+    }
+    
+    function showToast(message, type = 'success') {
+      const existing = document.querySelector('.toast-container');
+      if (existing) existing.remove();
+      
+      const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+      };
+      
+      const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ'
+      };
+      
+      const toast = document.createElement('div');
+      toast.className = 'toast-container fixed top-6 right-6 z-50';
+      toast.innerHTML = `
+        <div class="toast px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 text-white" style="background: ${colors[type]};">
+          <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center font-bold">
+            ${icons[type]}
+          </div>
+          <span class="font-medium">${message}</span>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    function destroyCharts() {
+      Object.values(chartInstances).forEach(chart => {
+        if (chart) chart.destroy();
+      });
+      chartInstances = {};
+    }
+    
+    // Render Functions
+    function render() {
+      if (!currentUser) {
+        renderAuth(document.getElementById('app'));
+      } else {
+        if (currentView === 'login' || currentView === 'signup') {
+          currentView = 'dashboard';
+        }
+        renderDashboard(document.getElementById('app'));
+      }
+    }
+    
+    function renderCurrentView() {
+      render();
+    }
+    
+    function renderAuth(container) {
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      
+      const isSignup = currentView === 'signup';
+      
+      container.innerHTML = `
+        <div class="h-full w-full flex items-center justify-center px-6 py-12 overflow-y-auto scrollbar-hide" style="background: ${bgColor};">
+          <div class="w-full max-w-md animate-scale-in">
+            <!-- Logo & Header -->
+            <div class="text-center mb-8">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center shadow-2xl" 
+                style="background: linear-gradient(135deg, ${primaryStart} 0%, ${primaryEnd} 100%);">
+                <span class="text-4xl">💎</span>
+              </div>
+              <h1 class="text-4xl font-bold mb-2" style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd}); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                ${config.app_title || defaultConfig.app_title}
+              </h1>
+              <p class="text-gray-600">${config.welcome_message || defaultConfig.welcome_message}</p>
+            </div>
+            
+            <!-- Auth Card -->
+            <div class="glass-panel rounded-3xl p-8 shadow-2xl">
+              <div class="flex gap-2 mb-6">
+                <button onclick="switchView('login')" 
+                  class="flex-1 py-3 rounded-xl font-semibold transition-all ${!isSignup ? 'text-white' : 'text-gray-600'}"
+                  style="background: ${!isSignup ? `linear-gradient(135deg, ${primaryStart}, ${primaryEnd})` : 'transparent'};">
+                  Login
+                </button>
+                <button onclick="switchView('signup')" 
+                  class="flex-1 py-3 rounded-xl font-semibold transition-all ${isSignup ? 'text-white' : 'text-gray-600'}"
+                  style="background: ${isSignup ? `linear-gradient(135deg, ${primaryStart}, ${primaryEnd})` : 'transparent'};">
+                  Sign Up
+                </button>
+              </div>
+              
+              <form onsubmit="${isSignup ? 'handleSignup(event)' : 'handleLogin(event)'}" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                  <input type="text" id="authUsername" required
+                    class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none"
+                    placeholder="Enter username">
+                </div>
+                
+                ${isSignup ? `
+                  <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                    <input type="email" id="authEmail" required
+                      class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none"
+                      placeholder="your@email.com">
+                  </div>
+                ` : ''}
+                
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                  <input type="password" id="authPassword" required ${isSignup ? 'minlength="6"' : ''}
+                    class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none"
+                    placeholder="${isSignup ? 'Min 6 characters' : 'Enter password'}">
+                </div>
+                
+                <button type="submit" id="authBtn"
+                  class="btn-primary w-full py-4 rounded-xl text-white font-bold text-lg shadow-xl"
+                  style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+                  <span id="authBtnText">${isSignup ? 'Create Account' : 'Sign In'}</span>
+                  <div id="authBtnLoader" class="loading-dots hidden">
+                    <span></span><span></span><span></span>
+                  </div>
+                </button>
+              </form>
+              
+              <p class="text-center text-sm text-gray-600 mt-6">
+                🔒 Your data is encrypted and private
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderDashboard(container) {
+      if (!currentUser) return;
+      
+      const stats = calculateStats();
+      const recentTxns = getUserTransactions()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5);
+      
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      const successColor = config.success_color || defaultConfig.success_color;
+      const dangerColor = config.danger_color || defaultConfig.danger_color;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      
+      container.innerHTML = `
+        <div class="h-full w-full flex flex-col" style="background: ${bgColor};">
+          <!-- Header -->
+          <header class="glass-panel shadow-lg">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+                    <span class="text-2xl">💎</span>
+                  </div>
+                  <div>
+                    <h1 class="text-xl font-bold text-gray-900">${config.app_title || defaultConfig.app_title}</h1>
+                    <p class="text-sm text-gray-600">Welcome, ${currentUser.username}</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                  <button onclick="openAddTransaction()" 
+                    class="btn-primary px-6 py-3 rounded-xl text-white font-semibold shadow-lg flex items-center gap-2"
+                    style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+                    <span class="text-xl">+</span>
+                    <span>Add Transaction</span>
+                  </button>
+                  <button onclick="openHistory()" 
+                    class="px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 font-semibold flex items-center gap-2">
+                    <span class="text-lg">📋</span>
+                    <span>History</span>
+                  </button>
+                  <button onclick="toggleSettingsMenu()" 
+                    class="relative px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 font-semibold flex items-center gap-2">
+                    <span class="text-lg">⚙️</span>
+                    <span>Settings</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </header>
+          
+          <!-- Settings Dropdown -->
+          <div id="settingsMenu" class="hidden fixed top-20 right-6 z-40 glass-panel rounded-2xl shadow-2xl w-80 animate-scale-in">
+            <div class="p-2">
+              <button onclick="openEditProfile()" 
+                class="w-full px-4 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-3 text-left">
+                <span class="text-2xl">👤</span>
+                <div>
+                  <p class="font-semibold text-gray-900">Edit Profile</p>
+                  <p class="text-xs text-gray-600">Update your information</p>
+                </div>
+              </button>
+              
+              <button onclick="openThemeSettings()" 
+                class="w-full px-4 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-3 text-left">
+                <span class="text-2xl">🎨</span>
+                <div>
+                  <p class="font-semibold text-gray-900">Theme</p>
+                  <p class="text-xs text-gray-600">Customize appearance</p>
+                </div>
+              </button>
+              
+              <button onclick="openCurrencySettings()" 
+                class="w-full px-4 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-3 text-left">
+                <span class="text-2xl">💱</span>
+                <div>
+                  <p class="font-semibold text-gray-900">Currency</p>
+                  <p class="text-xs text-gray-600">Change currency format</p>
+                </div>
+              </button>
+              
+              <button onclick="openNotificationSettings()" 
+                class="w-full px-4 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-3 text-left">
+                <span class="text-2xl">🔔</span>
+                <div>
+                  <p class="font-semibold text-gray-900">Notifications</p>
+                  <p class="text-xs text-gray-600">Manage alerts</p>
+                </div>
+              </button>
+              
+              <button onclick="openGoogleBackup()" 
+                class="w-full px-4 py-3 rounded-xl hover:bg-gray-100 flex items-center gap-3 text-left">
+                <span class="text-2xl">☁️</span>
+                <div>
+                  <p class="font-semibold text-gray-900">Google Backup</p>
+                  <p class="text-xs text-gray-600">Sync your data</p>
+                </div>
+              </button>
+              
+              <div class="my-2 border-t border-gray-200"></div>
+              
+              <button onclick="logoutUser()" 
+                class="w-full px-4 py-3 rounded-xl hover:bg-red-50 flex items-center gap-3 text-left text-red-600">
+                <span class="text-2xl">🚪</span>
+                <div>
+                  <p class="font-semibold">Sign Out</p>
+                  <p class="text-xs">Logout from your account</p>
+                </div>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Main Content -->
+          <main class="flex-1 overflow-y-auto scrollbar-hide">
+            <div class="max-w-7xl mx-auto px-6 py-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-8">${config.dashboard_title || defaultConfig.dashboard_title}</h2>
+              
+              <!-- Stats Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="stat-card glass-panel rounded-3xl p-6 shadow-xl">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: ${successColor}20;">
+                      <span class="text-2xl">💰</span>
+                    </div>
+                    <span class="text-sm font-semibold px-3 py-1 rounded-full" style="background: ${successColor}20; color: ${successColor};">
+                      Income
+                    </span>
+                  </div>
+                  <p class="text-4xl font-bold mb-2" style="color: ${successColor};">${formatCurrency(stats.income)}</p>
+                  <p class="text-sm text-gray-600">Total earnings</p>
+                </div>
+                
+                <div class="stat-card glass-panel rounded-3xl p-6 shadow-xl">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: ${dangerColor}20;">
+                      <span class="text-2xl">💸</span>
+                    </div>
+                    <span class="text-sm font-semibold px-3 py-1 rounded-full" style="background: ${dangerColor}20; color: ${dangerColor};">
+                      Expenses
+                    </span>
+                  </div>
+                  <p class="text-4xl font-bold mb-2" style="color: ${dangerColor};">${formatCurrency(stats.expenses)}</p>
+                  <p class="text-sm text-gray-600">Total spending</p>
+                </div>
+                
+                <div class="stat-card glass-panel rounded-3xl p-6 shadow-xl">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                      style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd})20;">
+                      <span class="text-2xl">📊</span>
+                    </div>
+                    <span class="text-sm font-semibold px-3 py-1 rounded-full" 
+                      style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd})20; color: ${primaryStart};">
+                      Balance
+                    </span>
+                  </div>
+                  <p class="text-4xl font-bold mb-2" style="color: ${stats.balance >= 0 ? successColor : dangerColor};">
+                    ${formatCurrency(stats.balance)}
+                  </p>
+                  <p class="text-sm text-gray-600">Current balance</p>
+                </div>
+              </div>
+              
+              <!-- Charts Section -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-panel rounded-3xl p-6 shadow-xl animate-fade-in">
+                  <h3 class="text-xl font-bold text-gray-900 mb-6">Category Distribution</h3>
+                  <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                  </div>
+                </div>
+                
+                <div class="glass-panel rounded-3xl p-6 shadow-xl animate-fade-in">
+                  <h3 class="text-xl font-bold text-gray-900 mb-6">Transaction Types</h3>
+                  <div class="chart-container">
+                    <canvas id="typeChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Payment Methods -->
+              <div class="glass-panel rounded-3xl p-6 shadow-xl mb-8 animate-fade-in">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Payment Methods Overview</h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  ${paymentMethods.map(pm => {
+                    const pmAmount = stats.paymentData[pm.id] || 0;
+                    return `
+                      <div class="payment-card glass-panel rounded-2xl p-4 text-center card-shine">
+                        <div class="w-16 h-16 mx-auto mb-3 rounded-2xl flex items-center justify-center" 
+                          style="background: ${pm.color}20;">
+                          <span class="text-3xl">${pm.icon}</span>
+                        </div>
+                        <p class="font-semibold text-gray-900 mb-1">${pm.name}</p>
+                        <p class="text-2xl font-bold" style="color: ${pm.color};">${formatCurrency(pmAmount)}</p>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+              
+              <!-- Recent Transactions -->
+              <div class="glass-panel rounded-3xl p-6 shadow-xl animate-fade-in">
+                <div class="flex items-center justify-between mb-6">
+                  <h3 class="text-xl font-bold text-gray-900">${config.transactions_label || defaultConfig.transactions_label}</h3>
+                  <div class="flex gap-3">
+                    <button onclick="downloadTransactions('csv')" 
+                      class="px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-gray-100"
+                      style="border: 2px solid ${primaryStart}; color: ${primaryStart};">
+                      <span>📥</span>
+                      <span>CSV</span>
+                    </button>
+                    <button onclick="downloadTransactions('pdf')" 
+                      class="px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-gray-100"
+                      style="border: 2px solid ${primaryStart}; color: ${primaryStart};">
+                      <span>📄</span>
+                      <span>PDF</span>
+                    </button>
+                    <button onclick="openEditTransactions()" 
+                      class="btn-primary px-4 py-2 rounded-xl text-white font-semibold text-sm flex items-center gap-2"
+                      style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+                      <span>✏️</span>
+                      <span>Edit Recent</span>
+                    </button>
+                  </div>
+                </div>
+                
+                ${recentTxns.length === 0 ? `
+                  <div class="text-center py-16">
+                    <span class="text-6xl mb-4 block">📊</span>
+                    <p class="text-xl font-semibold text-gray-900 mb-2">No transactions yet</p>
+                    <p class="text-gray-600 mb-6">Start by adding your first transaction</p>
+                    <button onclick="openAddTransaction()" 
+                      class="btn-primary px-8 py-3 rounded-xl text-white font-semibold"
+                      style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+                      Add Transaction
+                    </button>
+                  </div>
+                ` : `
+                  <div class="space-y-3">
+                    ${recentTxns.map(t => {
+                      const cat = getCategoryById(t.category);
+                      const pm = getPaymentMethodById(t.paymentMethod);
+                      return `
+                        <div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-all">
+                          <div class="w-14 h-14 rounded-2xl flex items-center justify-center" style="background: ${cat.color}20;">
+                            <span class="text-2xl">${cat.icon}</span>
+                          </div>
+                          <div class="flex-1">
+                            <p class="font-bold text-gray-900">${t.description || cat.name}</p>
+                            <div class="flex items-center gap-3 text-sm text-gray-600 mt-1">
+                              <span>${pm.icon} ${pm.name}</span>
+                              <span>•</span>
+                              <span>${new Date(t.date).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                          <div class="text-right">
+                            <p class="text-2xl font-bold ${t.type === 'income' ? 'text-green-500' : 'text-red-500'}">
+                              ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+                            </p>
+                            <span class="text-xs px-2 py-1 rounded-full font-semibold" 
+                              style="background: ${cat.color}20; color: ${cat.color};">
+                              ${cat.name}
+                            </span>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                `}
+              </div>
+            </div>
+          </main>
+        </div>
+      `;
+      
+      // Render charts after DOM is ready
+      setTimeout(() => {
+        renderCharts(stats);
+      }, 100);
+    }
+    
+    function renderCharts(stats) {
+      destroyCharts();
+      
+      // Category Chart
+      const categoryCtx = document.getElementById('categoryChart');
+      if (categoryCtx && Object.keys(stats.categoryData).length > 0) {
+        const categoryLabels = Object.keys(stats.categoryData).map(id => getCategoryById(id).name);
+        const categoryValues = Object.values(stats.categoryData);
+        const categoryColors = Object.keys(stats.categoryData).map(id => getCategoryById(id).color);
+        
+        chartInstances.category = new Chart(categoryCtx, {
+          type: 'doughnut',
+          data: {
+            labels: categoryLabels,
+            datasets: [{
+              data: categoryValues,
+              backgroundColor: categoryColors,
+              borderWidth: 0,
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 20,
+                  font: { size: 14, weight: '600' },
+                  usePointStyle: true,
+                  pointStyle: 'circle'
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                cornerRadius: 8,
+                titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 13 },
+                callbacks: {
+                  label: (context) => {
+                    const label = context.label || '';
+                    const value = formatCurrency(context.parsed);
+                    return `${label}: ${value}`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Type Chart
+      const typeCtx = document.getElementById('typeChart');
+      if (typeCtx) {
+        const successColor = config.success_color || defaultConfig.success_color;
+        const dangerColor = config.danger_color || defaultConfig.danger_color;
+        
+        chartInstances.type = new Chart(typeCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Income', 'Expenses'],
+            datasets: [{
+              label: 'Amount',
+              data: [stats.income, stats.expenses],
+              backgroundColor: [successColor, dangerColor],
+              borderRadius: 12,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                cornerRadius: 8,
+                titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 13 },
+                callbacks: {
+                  label: (context) => formatCurrency(context.parsed.y)
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { display: false },
+                ticks: {
+                  font: { size: 12, weight: '600' },
+                  callback: (value) => '$' + value.toLocaleString()
+                }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { font: { size: 14, weight: '600' } }
+              }
+            }
+          }
+        });
+      }
+    }
+    
+    // Event Handlers
+    function switchView(view) {
+      currentView = view;
+      render();
+    }
+    
+    async function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('authUsername').value.trim();
+      const password = document.getElementById('authPassword').value;
+      
+      const btn = document.getElementById('authBtn');
+      const btnText = document.getElementById('authBtnText');
+      const btnLoader = document.getElementById('authBtnLoader');
+      
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+      
+      setTimeout(() => {
+        const result = loginUser(username, password);
+        
+        if (result.success) {
+          showToast('Welcome back!', 'success');
+          currentView = 'dashboard';
+          render();
+        } else {
+          showToast(result.message, 'error');
+          btn.disabled = false;
+          btnText.classList.remove('hidden');
+          btnLoader.classList.add('hidden');
+        }
+      }, 800);
+    }
+    
+    async function handleSignup(e) {
+      e.preventDefault();
+      const username = document.getElementById('authUsername').value.trim();
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      
+      const btn = document.getElementById('authBtn');
+      const btnText = document.getElementById('authBtnText');
+      const btnLoader = document.getElementById('authBtnLoader');
+      
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+      
+      setTimeout(() => {
+        const result = registerUser(username, email, password);
+        
+        if (result.success) {
+          showToast('Account created successfully!', 'success');
+          loginUser(username, password);
+          currentView = 'dashboard';
+          render();
+        } else {
+          showToast(result.message, 'error');
+          btn.disabled = false;
+          btnText.classList.remove('hidden');
+          btnLoader.classList.add('hidden');
+        }
+      }, 800);
+    }
+    
+    function openAddTransaction() {
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      
+      const modal = document.createElement('div');
+      modal.id = 'transactionModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-2xl w-full max-h-[90%] overflow-y-auto scrollbar-hide animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">Add Transaction</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          <form onsubmit="saveTransaction(event)" class="space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+              <button type="button" onclick="selectType('income')" id="incomeBtn"
+                class="type-btn py-4 rounded-xl font-semibold border-2 border-gray-200 text-gray-600 hover:border-green-500">
+                💰 Income
+              </button>
+              <button type="button" onclick="selectType('expense')" id="expenseBtn"
+                class="type-btn py-4 rounded-xl font-semibold border-2 text-white"
+                style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd}); border-color: transparent;">
+                💸 Expense
+              </button>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Amount</label>
+              <input type="number" id="txnAmount" step="0.01" required
+                class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none text-2xl font-bold"
+                placeholder="0.00">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+              <div class="grid grid-cols-3 gap-3" id="categoryGrid">
+                ${categories.map(cat => `
+                  <button type="button" onclick="selectCategory('${cat.id}')" 
+                    class="category-btn p-3 rounded-xl border-2 border-gray-200 hover:border-purple-500 flex flex-col items-center gap-2"
+                    data-category="${cat.id}">
+                    <span class="text-3xl">${cat.icon}</span>
+                    <span class="text-xs font-semibold text-gray-700">${cat.name}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Payment Method</label>
+              <div class="grid grid-cols-3 gap-3">
+                ${paymentMethods.map((pm, idx) => `
+                  <button type="button" onclick="selectPaymentMethod('${pm.id}')" 
+                    class="payment-method-btn p-3 rounded-xl border-2 ${idx === 0 ? 'border-purple-500' : 'border-gray-200'} hover:border-purple-500 flex flex-col items-center gap-2"
+                    data-payment="${pm.id}">
+                    <span class="text-3xl">${pm.icon}</span>
+                    <span class="text-xs font-semibold text-gray-700">${pm.name}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+              <input type="text" id="txnDescription"
+                class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none"
+                placeholder="Add a note...">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Date</label>
+              <input type="date" id="txnDate" value="${new Date().toISOString().split('T')[0]}" required
+                class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+            </div>
+            
+            <button type="submit" id="saveBtn"
+              class="btn-primary w-full py-4 rounded-xl text-white font-bold text-lg shadow-xl"
+              style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+              <span id="saveBtnText">Save Transaction</span>
+              <div id="saveBtnLoader" class="loading-dots hidden">
+                <span></span><span></span><span></span>
+              </div>
+            </button>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      
+      window.selectedTxnType = 'expense';
+      window.selectedTxnCategory = categories[0].id;
+      window.selectedTxnPayment = paymentMethods[0].id;
+    }
+    
+    function selectType(type) {
+      window.selectedTxnType = type;
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      
+      const incomeBtn = document.getElementById('incomeBtn');
+      const expenseBtn = document.getElementById('expenseBtn');
+      
+      if (type === 'income') {
+        incomeBtn.style.background = 'linear-gradient(135deg, #11998e, #38ef7d)';
+        incomeBtn.style.color = 'white';
+        incomeBtn.style.borderColor = 'transparent';
+        expenseBtn.style.background = 'transparent';
+        expenseBtn.style.color = '#4b5563';
+        expenseBtn.style.borderColor = '#e5e7eb';
+      } else {
+        expenseBtn.style.background = `linear-gradient(135deg, ${primaryStart}, ${primaryEnd})`;
+        expenseBtn.style.color = 'white';
+        expenseBtn.style.borderColor = 'transparent';
+        incomeBtn.style.background = 'transparent';
+        incomeBtn.style.color = '#4b5563';
+        incomeBtn.style.borderColor = '#e5e7eb';
+      }
+    }
+    
+    function selectCategory(id) {
+      window.selectedTxnCategory = id;
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        if (btn.dataset.category === id) {
+          btn.style.borderColor = '#667eea';
+          btn.style.background = '#667eea10';
+        } else {
+          btn.style.borderColor = '#e5e7eb';
+          btn.style.background = 'transparent';
+        }
+      });
+    }
+    
+    function selectPaymentMethod(id) {
+      window.selectedTxnPayment = id;
+      document.querySelectorAll('.payment-method-btn').forEach(btn => {
+        if (btn.dataset.payment === id) {
+          btn.style.borderColor = '#667eea';
+          btn.style.background = '#667eea10';
+        } else {
+          btn.style.borderColor = '#e5e7eb';
+          btn.style.background = 'transparent';
+        }
+      });
+    }
+    
+    async function saveTransaction(e) {
+      e.preventDefault();
+      
+      const amount = parseFloat(document.getElementById('txnAmount').value);
+      const description = document.getElementById('txnDescription').value.trim();
+      const date = document.getElementById('txnDate').value;
+      
+      if (!amount || amount <= 0) {
+        showToast('Please enter a valid amount', 'error');
+        return;
+      }
+      
+      if (getUserTransactions().length >= 999) {
+        showToast('Transaction limit reached (999)', 'error');
+        return;
+      }
+      
+      const saveBtn = document.getElementById('saveBtn');
+      const saveBtnText = document.getElementById('saveBtnText');
+      const saveBtnLoader = document.getElementById('saveBtnLoader');
+      
+      saveBtn.disabled = true;
+      saveBtnText.classList.add('hidden');
+      saveBtnLoader.classList.remove('hidden');
+      
+      try {
+        if (window.dataSdk) {
+          const result = await window.dataSdk.create({
+            userId: currentUser.userId,
+            type: window.selectedTxnType,
+            category: window.selectedTxnCategory,
+            paymentMethod: window.selectedTxnPayment,
+            amount,
+            description,
+            date,
+            createdAt: new Date().toISOString()
+          });
+          
+          if (result.isOk) {
+            showToast('Transaction saved successfully!', 'success');
+            closeModal();
+          } else {
+            showToast('Failed to save transaction', 'error');
+            saveBtn.disabled = false;
+            saveBtnText.classList.remove('hidden');
+            saveBtnLoader.classList.add('hidden');
+          }
+        }
+      } catch (e) {
+        showToast('An error occurred', 'error');
+        saveBtn.disabled = false;
+        saveBtnText.classList.remove('hidden');
+        saveBtnLoader.classList.add('hidden');
+      }
+    }
+    
+    function closeModal() {
+      const modal = document.getElementById('transactionModal');
+      if (modal) modal.remove();
+      
+      const editModal = document.getElementById('editModal');
+      if (editModal) editModal.remove();
+      
+      const settingsModal = document.getElementById('settingsModal');
+      if (settingsModal) settingsModal.remove();
+      
+      const historyModal = document.getElementById('historyModal');
+      if (historyModal) historyModal.remove();
+    }
+    
+    function toggleSettingsMenu() {
+      const menu = document.getElementById('settingsMenu');
+      if (menu) {
+        menu.classList.toggle('hidden');
+      }
+      
+      // Close when clicking outside
+      setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+          const menu = document.getElementById('settingsMenu');
+          if (menu && !menu.contains(e.target) && !e.target.closest('button[onclick="toggleSettingsMenu()"]')) {
+            menu.classList.add('hidden');
+            document.removeEventListener('click', closeMenu);
+          }
+        });
+      }, 0);
+    }
+    
+    function openEditProfile() {
+      toggleSettingsMenu();
+      if (!currentUser) return;
+      
+      const user = userDatabase[currentUser.username];
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      
+      const modal = document.createElement('div');
+      modal.id = 'settingsModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-md w-full animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">Edit Profile</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          <form onsubmit="saveProfile(event)" class="space-y-6">
+            <div class="text-center mb-6">
+              <div class="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-5xl mb-4"
+                style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd})20;">
+                👤
+              </div>
+              <p class="text-sm text-gray-600">Profile Picture</p>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+              <input type="text" id="profileUsername" value="${currentUser.username}" disabled
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 text-gray-500">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+              <input type="email" id="profileEmail" value="${user.email}" required
+                class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">New Password (optional)</label>
+              <input type="password" id="profilePassword" minlength="6"
+                class="input-modern w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none"
+                placeholder="Leave blank to keep current">
+            </div>
+            
+            <button type="submit" 
+              class="btn-primary w-full py-4 rounded-xl text-white font-bold shadow-xl"
+              style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+              Save Changes
+            </button>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function saveProfile(e) {
+      e.preventDefault();
+      const newEmail = document.getElementById('profileEmail').value.trim();
+      const newPassword = document.getElementById('profilePassword').value;
+      
+      const user = userDatabase[currentUser.username];
+      user.email = newEmail;
+      
+      if (newPassword) {
+        user.passwordHash = hashPassword(newPassword);
+      }
+      
+      localStorage.setItem('financeHub_users', JSON.stringify(userDatabase));
+      currentUser.email = newEmail;
+      localStorage.setItem('financeHub_currentUser', JSON.stringify(currentUser));
+      
+      showToast('Profile updated successfully!', 'success');
+      closeModal();
+      render();
+    }
+    
+    function openThemeSettings() {
+      toggleSettingsMenu();
+      
+      const modal = document.createElement('div');
+      modal.id = 'settingsModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-2xl w-full animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">🎨 Choose Theme</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            ${themes.map(theme => `
+              <button onclick="applyTheme('${theme.id}')" 
+                class="theme-card p-6 rounded-2xl border-2 border-gray-200 hover:border-purple-500 transition-all text-left">
+                <div class="h-20 rounded-xl mb-4" style="background: linear-gradient(135deg, ${theme.start}, ${theme.end});"></div>
+                <p class="font-bold text-gray-900">${theme.name}</p>
+                <p class="text-sm text-gray-600 mt-1">Click to apply</p>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function applyTheme(themeId) {
+      const theme = themes.find(t => t.id === themeId);
+      if (!theme) return;
+      
+      if (window.elementSdk) {
+        window.elementSdk.setConfig({
+          primary_gradient_start: theme.start,
+          primary_gradient_end: theme.end
+        });
+      }
+      
+      showToast(`${theme.name} theme applied!`, 'success');
+      closeModal();
+    }
+    
+    function openCurrencySettings() {
+      toggleSettingsMenu();
+      const currentCurrency = (userSettings[currentUser?.userId]?.currency) || 'USD';
+      
+      const modal = document.createElement('div');
+      modal.id = 'settingsModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-md w-full animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">💱 Currency</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          <div class="space-y-2">
+            ${currencies.map(curr => `
+              <button onclick="applyCurrency('${curr.code}')" 
+                class="w-full px-6 py-4 rounded-xl border-2 ${currentCurrency === curr.code ? 'border-purple-500 bg-purple-50' : 'border-gray-200'} hover:border-purple-400 flex items-center justify-between">
+                <div class="text-left">
+                  <p class="font-bold text-gray-900">${curr.name}</p>
+                  <p class="text-sm text-gray-600">${curr.symbol} ${curr.code}</p>
+                </div>
+                ${currentCurrency === curr.code ? '<span class="text-2xl">✓</span>' : ''}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function applyCurrency(currencyCode) {
+      if (!currentUser) return;
+      
+      if (!userSettings[currentUser.userId]) {
+        userSettings[currentUser.userId] = {};
+      }
+      userSettings[currentUser.userId].currency = currencyCode;
+      localStorage.setItem('financeHub_settings', JSON.stringify(userSettings));
+      
+      const currency = currencies.find(c => c.code === currencyCode);
+      showToast(`Currency changed to ${currency.name}!`, 'success');
+      closeModal();
+      render();
+    }
+    
+    function openNotificationSettings() {
+      toggleSettingsMenu();
+      const settings = userSettings[currentUser?.userId] || {};
+      
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      
+      const modal = document.createElement('div');
+      modal.id = 'settingsModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-md w-full animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">🔔 Notifications</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="p-4 rounded-xl border-2 border-gray-200 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-gray-900">Transaction Alerts</p>
+                <p class="text-sm text-gray-600">Get notified for new transactions</p>
+              </div>
+              <label class="relative inline-block w-14 h-8">
+                <input type="checkbox" id="notif_transactions" ${settings.notif_transactions !== false ? 'checked' : ''} 
+                  onchange="toggleNotification('notif_transactions')" class="sr-only peer">
+                <div class="w-14 h-8 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all"
+                  style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});"></div>
+              </label>
+            </div>
+            
+            <div class="p-4 rounded-xl border-2 border-gray-200 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-gray-900">Weekly Summary</p>
+                <p class="text-sm text-gray-600">Receive weekly spending reports</p>
+              </div>
+              <label class="relative inline-block w-14 h-8">
+                <input type="checkbox" id="notif_weekly" ${settings.notif_weekly !== false ? 'checked' : ''} 
+                  onchange="toggleNotification('notif_weekly')" class="sr-only peer">
+                <div class="w-14 h-8 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all"
+                  style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});"></div>
+              </label>
+            </div>
+            
+            <div class="p-4 rounded-xl border-2 border-gray-200 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-gray-900">Budget Warnings</p>
+                <p class="text-sm text-gray-600">Alert when exceeding budget</p>
+              </div>
+              <label class="relative inline-block w-14 h-8">
+                <input type="checkbox" id="notif_budget" ${settings.notif_budget !== false ? 'checked' : ''} 
+                  onchange="toggleNotification('notif_budget')" class="sr-only peer">
+                <div class="w-14 h-8 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all"
+                  style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function toggleNotification(key) {
+      if (!currentUser) return;
+      
+      if (!userSettings[currentUser.userId]) {
+        userSettings[currentUser.userId] = {};
+      }
+      
+      const checkbox = document.getElementById(key);
+      userSettings[currentUser.userId][key] = checkbox.checked;
+      localStorage.setItem('financeHub_settings', JSON.stringify(userSettings));
+      
+      showToast(checkbox.checked ? 'Notification enabled' : 'Notification disabled', 'success');
+    }
+    
+    function openGoogleBackup() {
+      toggleSettingsMenu();
+      const settings = userSettings[currentUser?.userId] || {};
+      
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      
+      const modal = document.createElement('div');
+      modal.id = 'settingsModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-md w-full animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">☁️ Google Backup</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          <div class="text-center mb-8">
+            <div class="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-5xl mb-4"
+              style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd})20;">
+              ☁️
+            </div>
+            <p class="text-gray-600 mb-2">Securely backup your financial data to the cloud</p>
+            <p class="text-sm text-gray-500">Last backup: ${settings.lastBackup ? new Date(settings.lastBackup).toLocaleDateString() : 'Never'}</p>
+          </div>
+          
+          <div class="space-y-4">
+            <button onclick="performBackup()" 
+              class="btn-primary w-full py-4 rounded-xl text-white font-bold shadow-xl"
+              style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+              📤 Backup Now
+            </button>
+            
+            <button onclick="performRestore()" 
+              class="w-full py-4 rounded-xl font-bold border-2 hover:bg-gray-50"
+              style="border-color: ${primaryStart}; color: ${primaryStart};">
+              📥 Restore from Backup
+            </button>
+            
+            <div class="p-4 rounded-xl bg-blue-50 border-2 border-blue-200">
+              <div class="flex items-start gap-3">
+                <span class="text-xl">ℹ️</span>
+                <div class="text-sm text-blue-900">
+                  <p class="font-semibold mb-1">Demo Feature</p>
+                  <p class="text-blue-700">This is a demonstration. In a production app, this would sync with Google Drive or cloud storage.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function performBackup() {
+      if (!currentUser) return;
+      
+      const userTxns = getUserTransactions();
+      const backupData = {
+        user: currentUser,
+        transactions: userTxns,
+        settings: userSettings[currentUser.userId] || {},
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem(`financeHub_backup_${currentUser.userId}`, JSON.stringify(backupData));
+      
+      if (!userSettings[currentUser.userId]) {
+        userSettings[currentUser.userId] = {};
+      }
+      userSettings[currentUser.userId].lastBackup = new Date().toISOString();
+      localStorage.setItem('financeHub_settings', JSON.stringify(userSettings));
+      
+      showToast('Backup created successfully!', 'success');
+      closeModal();
+    }
+    
+    function performRestore() {
+      if (!currentUser) return;
+      
+      const backupData = localStorage.getItem(`financeHub_backup_${currentUser.userId}`);
+      if (!backupData) {
+        showToast('No backup found', 'warning');
+        return;
+      }
+      
+      showToast('Backup restored successfully!', 'success');
+      closeModal();
+      render();
+    }
+    
+    function openHistory() {
+      const userTxns = getUserTransactions().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      
+      const modal = document.createElement('div');
+      modal.id = 'historyModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-4xl w-full max-h-[90%] overflow-y-auto scrollbar-hide animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">📋 Transaction History</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          ${userTxns.length === 0 ? `
+            <div class="text-center py-16">
+              <span class="text-6xl mb-4 block">📊</span>
+              <p class="text-xl font-semibold text-gray-900 mb-2">No transaction history</p>
+              <p class="text-gray-600">Your transactions will appear here</p>
+            </div>
+          ` : `
+            <div class="space-y-3">
+              ${userTxns.map(t => {
+                const cat = getCategoryById(t.category);
+                const pm = getPaymentMethodById(t.paymentMethod);
+                return `
+                  <div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-all border-2 border-gray-100">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center" style="background: ${cat.color}20;">
+                      <span class="text-2xl">${cat.icon}</span>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-bold text-gray-900">${t.description || cat.name}</p>
+                      <div class="flex items-center gap-3 text-sm text-gray-600 mt-1">
+                        <span>${pm.icon} ${pm.name}</span>
+                        <span>•</span>
+                        <span>${new Date(t.date).toLocaleDateString()}</span>
+                        <span>•</span>
+                        <span>${new Date(t.createdAt).toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-2xl font-bold ${t.type === 'income' ? 'text-green-500' : 'text-red-500'}">
+                        ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount)}
+                      </p>
+                      <span class="text-xs px-2 py-1 rounded-full font-semibold" 
+                        style="background: ${cat.color}20; color: ${cat.color};">
+                        ${cat.name}
+                      </span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `}
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    function openEditTransactions() {
+      const recentTxns = getUserTransactions()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 10);
+      
+      if (recentTxns.length === 0) {
+        showToast('No transactions to edit', 'warning');
+        return;
+      }
+      
+      const primaryStart = config.primary_gradient_start || defaultConfig.primary_gradient_start;
+      const primaryEnd = config.primary_gradient_end || defaultConfig.primary_gradient_end;
+      
+      const modal = document.createElement('div');
+      modal.id = 'editModal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center px-6 modal-backdrop';
+      modal.innerHTML = `
+        <div class="glass-panel rounded-3xl p-8 max-w-4xl w-full max-h-[90%] overflow-y-auto scrollbar-hide animate-scale-in">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">Edit Recent Transactions</h3>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center">
+              <span class="text-2xl text-gray-600">×</span>
+            </button>
+          </div>
+          
+          <div class="space-y-3">
+            ${recentTxns.map(t => {
+              const cat = getCategoryById(t.category);
+              const pm = getPaymentMethodById(t.paymentMethod);
+              return `
+                <div class="edit-transaction-row p-4 rounded-2xl border-2 border-gray-100">
+                  <div class="flex items-center gap-4 mb-3">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: ${cat.color}20;">
+                      <span class="text-2xl">${cat.icon}</span>
+                    </div>
+                    <div class="flex-1">
+                      <input type="text" value="${t.description || cat.name}" 
+                        id="desc_${t.__backendId}"
+                        class="w-full px-3 py-2 border border-gray-200 rounded-lg font-semibold outline-none focus:border-purple-500">
+                      <p class="text-sm text-gray-600 mt-1">${new Date(t.date).toLocaleDateString()} • ${pm.name}</p>
+                    </div>
+                    <input type="number" step="0.01" value="${t.amount}" 
+                      id="amt_${t.__backendId}"
+                      class="w-32 px-3 py-2 border border-gray-200 rounded-lg font-bold text-lg outline-none focus:border-purple-500 text-right">
+                  </div>
+                  <div class="flex gap-2">
+                    <button onclick="updateTransaction('${t.__backendId}')" 
+                      class="flex-1 py-2 rounded-lg font-semibold text-white text-sm"
+                      style="background: linear-gradient(135deg, ${primaryStart}, ${primaryEnd});">
+                      💾 Save Changes
+                    </button>
+                    <button onclick="confirmDeleteTransaction('${t.__backendId}')" 
+                      class="px-4 py-2 rounded-lg font-semibold text-sm border-2 border-red-500 text-red-500 hover:bg-red-50">
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    
+    async function updateTransaction(backendId) {
+      const transaction = allTransactions.find(t => t.__backendId === backendId);
+      if (!transaction) return;
+      
+      const newDesc = document.getElementById(`desc_${backendId}`).value.trim();
+      const newAmount = parseFloat(document.getElementById(`amt_${backendId}`).value);
+      
+      if (!newAmount || newAmount <= 0) {
+        showToast('Please enter a valid amount', 'error');
+        return;
+      }
+      
+      const updatedTransaction = {
+        ...transaction,
+        description: newDesc,
+        amount: newAmount
+      };
+      
+      if (window.dataSdk) {
+        const result = await window.dataSdk.update(updatedTransaction);
+        if (result.isOk) {
+          showToast('Transaction updated!', 'success');
+        } else {
+          showToast('Failed to update transaction', 'error');
+        }
+      }
+    }
+    
+    function confirmDeleteTransaction(backendId) {
+      const transaction = allTransactions.find(t => t.__backendId === backendId);
+      if (!transaction) return;
+      
+      const row = document.getElementById(`desc_${backendId}`).closest('.edit-transaction-row');
+      row.innerHTML = `
+        <div class="text-center py-4">
+          <p class="font-semibold text-gray-900 mb-4">Are you sure you want to delete this transaction?</p>
+          <div class="flex gap-3 justify-center">
+            <button onclick="deleteTransaction('${backendId}')" 
+              class="px-6 py-2 rounded-lg font-semibold bg-red-500 text-white hover:bg-red-600">
+              Yes, Delete
+            </button>
+            <button onclick="openEditTransactions()" 
+              class="px-6 py-2 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cancel
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    
+    async function deleteTransaction(backendId) {
+      const transaction = allTransactions.find(t => t.__backendId === backendId);
+      if (!transaction) return;
+      
+      if (window.dataSdk) {
+        const result = await window.dataSdk.delete(transaction);
+        if (result.isOk) {
+          showToast('Transaction deleted', 'success');
+          closeModal();
+        } else {
+          showToast('Failed to delete transaction', 'error');
+        }
+      }
+    }
+    
+    function downloadTransactions(format) {
+      const userTxns = getUserTransactions();
+      
+      if (userTxns.length === 0) {
+        showToast('No transactions to download', 'warning');
+        return;
+      }
+      
+      if (format === 'csv') {
+        let csv = 'Date,Type,Category,Payment Method,Amount,Description\n';
+        userTxns.forEach(t => {
+          const cat = getCategoryById(t.category);
+          const pm = getPaymentMethodById(t.paymentMethod);
+          csv += `${t.date},${t.type},${cat.name},${pm.name},${t.amount},"${t.description || ''}"\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `transactions_${currentUser.username}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        showToast('CSV downloaded successfully!', 'success');
+      } else if (format === 'pdf') {
+        // Generate simple text-based PDF content
+        let pdfContent = `TRANSACTION HISTORY\n`;
+        pdfContent += `User: ${currentUser.username}\n`;
+        pdfContent += `Date: ${new Date().toLocaleDateString()}\n`;
+        pdfContent += `Total Transactions: ${userTxns.length}\n\n`;
+        pdfContent += `${'='.repeat(80)}\n\n`;
+        
+        userTxns.forEach(t => {
+          const cat = getCategoryById(t.category);
+          const pm = getPaymentMethodById(t.paymentMethod);
+          pdfContent += `Date: ${t.date}\n`;
+          pdfContent += `Type: ${t.type.toUpperCase()}\n`;
+          pdfContent += `Category: ${cat.name}\n`;
+          pdfContent += `Payment: ${pm.name}\n`;
+          pdfContent += `Amount: ${formatCurrency(t.amount)}\n`;
+          pdfContent += `Description: ${t.description || 'N/A'}\n`;
+          pdfContent += `${'-'.repeat(80)}\n\n`;
+        });
+        
+        const blob = new Blob([pdfContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `transactions_${currentUser.username}_${new Date().toISOString().split('T')[0]}.txt`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        showToast('Transaction report downloaded!', 'success');
+      }
+    }
+    
+    // Initialize
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c188635c58f3d1f',t:'MTc2OTAxNjQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
